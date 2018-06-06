@@ -4,10 +4,12 @@ hostname=$(uname -n)
 baseinfo="$(cat /root/molitor.json | sed 's/,/\n/g')"
 echo "$hostname" >>"$hostname"_inventory
 echo "===========================================================" >>"$hostname"_inventory
-echo -n "Location" >>"$hostname"_inventory
-echo -n "$baseinfo" | sed -n 's/"location":/\n/p' >>"$hostname"_inventory
-echo -n "CID" >>"$hostname"_inventory
-echo "$baseinfo" |  sed -n 's/"customerid":/\n/p' >>"$hostname"_inventory
+cat /root/molitor.json |json_pp | grep location | cut -d\" -f4 >> "$hostname"_inventory
+cat /root/molitor.json |json_pp | grep customerid | awk '{print $3}' | sed 's=,==g' >>"$hostname"_inventory
+#echo -n "Location" >>"$hostname"_inventory
+#echo -n "$baseinfo" | sed -n 's/"location":/\n/p' >>"$hostname"_inventory
+#echo -n "CID" >>"$hostname"_inventory
+#echo "$baseinfo" |  sed -n 's/"customerid":/\n/p' >>"$hostname"_inventory
 #blocal="$baseinfo" | sed -n 's/"location"/\n/p'
 #bcid="$baseinfo" | sed -n 's/"customerid"/\n/p'
 #echo "Location: $blocal" >>"$hostname"_inventory
