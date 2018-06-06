@@ -1,0 +1,30 @@
+#!/bin/bash
+
+hostname=$(uname -n)
+baseinfo="$(cat /root/molitor.json | sed 's/,/\n/g')"
+echo "$hostname" >>"$hostname"_inventory
+echo "===========================================================" >>"$hostname"_inventory
+echo -n "Location" >>"$hostname"_inventory
+echo -n "$baseinfo" | sed -n 's/"location":/\n/p' >>"$hostname"_inventory
+echo -n "CID" >>"$hostname"_inventory
+echo "$baseinfo" |  sed -n 's/"customerid":/\n/p' >>"$hostname"_inventory
+#blocal="$baseinfo" | sed -n 's/"location"/\n/p'
+#bcid="$baseinfo" | sed -n 's/"customerid"/\n/p'
+#echo "Location: $blocal" >>"$hostname"_inventory
+#echo "CID:$bcid" >>"$hostname"_inventory
+echo "===========================================================" >>"$hostname"_inventory
+lshw -short -class cpu >>"$hostname"_inventory
+lshw -short -class memory | grep GiB >>"$hostname"_inventory
+lshw -short -class disk >>"$hostname"_inventory
+echo "===========================================================" >>"$hostname"_inventory
+for i in {a..z} ; do
+sd=$(smartctl -i /dev/sd$i | grep -i "Serial Number:")
+echo "sd$i $sd" | sed -n 's/Serial/\n/p'  >>"$hostname"_inventory
+done
+
+for ii in {a..z} ; do
+sd1=$(smartctl -i /dev/sda$ii | grep -i "Serial Number:")
+echo "sda$ii $sd1"| sed -n 's/Serial/\n/p' >>"$hostname"_inventory
+done
+
+echo "===========================================================" >>"$hostname"_inventory
